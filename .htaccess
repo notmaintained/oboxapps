@@ -1,0 +1,32 @@
+
+	DirectoryIndex index.php
+
+	# Deny directory listings
+	Options -Indexes
+
+	# Follow symbolic links
+	Options +FollowSymLinks
+
+
+	<IfModule mod_rewrite.c>
+
+		<IfModule mod_env.c>
+			SetEnv REWRITE_ENGINE On
+		</IfModule>
+
+		RewriteEngine On
+		RewriteRule .* - [E=REMOTE_USER:%{HTTP:Authorization}]
+		RewriteCond %{REQUEST_FILENAME} !-f
+		RewriteCond %{REQUEST_FILENAME} !-d
+		RewriteCond %{REQUEST_FILENAME} !-s
+		RewriteCond %{REQUEST_FILENAME} !-l
+
+		RewriteRule  ^(.*)$  index.php
+	</IfModule>
+
+
+	# Protect .htaccess
+	<Files .htaccess>
+		order deny,allow
+		deny from all
+	</Files>
