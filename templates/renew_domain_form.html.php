@@ -24,10 +24,10 @@
 			<div data-role="fieldcontain">
 				<label for="renew_domain-invoice-option" class="select">Invoice Option:</label>
 				<select name="invoice_option" id="renew_domain-invoice-option" data-native-menu="false">
-					<option value="NoInvoice" selected="selected">NoInvoice</option>
-					<option value="PayInvoice">PayInvoice</option>
-					<option value="KeepInvoice">KeepInvoice</option>
-					<option value="OnlyAdd">OnlyAdd</option>
+					<option value="NoInvoice" selected="selected">Cancel Invoice & Execute</option>
+					<option value="PayInvoice">Pay Invoice & Execute</option>
+					<option value="KeepInvoice">Keep Invoice & Execute</option>
+					<option value="OnlyAdd">Only Add Invoice</option>
 				</select>
 			</div>
 
