@@ -1,0 +1,26 @@
+# What is Bombay?
+
+Bombay is a minimal set of non-OO libraries for developing [RESTful][1] web applications in [PHP][2] with [ease and joy][3].
+
+Bombay is [free software][4] and distributed under the terms of the [GNU General Public License][5].
+
+	/index.php
+	<?php
+
+		// 1. Use bombay by including bombay.php
+		require '/path/to/bombay.php';
+
+		// 2. Include only the libs you need from it
+		requires ('helpers', 'template', 'form');
+
+		// 3. Do your thang
+		...
+
+	?>
+
+
+[1]: http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm
+[2]: http://php.net/
+[3]: http://www.exampler.com/ease-and-joy.html
+[4]: http://www.gnu.org/philosophy/free-sw.html
+[5]: http://www.gnu.org/licenses/gpl.html
