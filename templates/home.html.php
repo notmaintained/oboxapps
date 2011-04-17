@@ -29,10 +29,10 @@
 	</div>
 
 	<div data-role="content">
-		<p>If you are a Logicboxes or Resellerclub user then OboxApps will automate common tasks for you by making API calls on your behalf. To start using OboxApps you need to:</p>
+		<p>OboxApps is an app suite for Logicboxes and Resellerclub users that can be used on the go on all popular smartphone and tablet platforms (iOS, Android, BlackBerry, Windows Mobile, webOS, Symbian, Maemo, MeeGo and bada). To start using OboxApps you need to:</p>
 		<ul>
 			<li>Authorize <strong>173.255.240.129</strong> to make API calls on your behalf from the <code>Setting > API</code> page within your Control Panel.</li>
-			<li>To make API calls on your behalf, you have to provide OboxApps your Reseller ID and password. You can get your Reseller ID from the <code>Setting > Personal Information > Primary Profile</code> page within your Control Panel. <strong>OboxApps does not store your Reseller ID and password</strong> and only requires it to make API calls on your behalf.</li>
+			<li>Each app will ask you for your Reseller ID and password to make the API calls. You can get your Reseller ID from the <code>Setting > Personal Information > Primary Profile</code> page within your Control Panel. <strong>OboxApps does not store your Reseller ID and password</strong> and only uses it to make API calls on your behalf.</li>
 		</ul>
 
 		<p>OboxApps is <a href="http://madebysandeepshetty.com/" rel="external">Made by Sandeep Shetty</a>.</p>

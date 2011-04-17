@@ -7,12 +7,12 @@
 
 	<div data-role="content">
 
-		<p>Fill out the form below to renew a domain:</p>
+		<p>Fill out the form below to renew a domain name:</p>
 
 		<form method="post" action="<?php echo relative_uri('/apps/renew_domain'); ?>" data-direction="reverse">
 
 			<div data-role="fieldcontain">
-				<label for="gappsconf-domain">Domain:</label>
+				<label for="gappsconf-domain">Domain Name:</label>
 				<input type="text" name="domain" id="renew_domain-domain" value="" />
 			</div>
 

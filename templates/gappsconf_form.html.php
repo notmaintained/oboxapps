@@ -6,12 +6,12 @@
 	</div>
 
 	<div data-role="content">
-		<p>Fill out the form below to setup the required DNS records for Google Apps to work on a domain under your account.</p>
+		<p>Fill out the form below to automatically add the required DNS records for a domain name to enable Google Apps on it.</p>
 
 		<form method="post" action="<?php echo relative_uri('/apps/gappsconf'); ?>" data-direction="reverse">
 
 			<div data-role="fieldcontain">
-				<label for="gappsconf-domain">Domain:</label>
+				<label for="gappsconf-domain">Domain Name:</label>
 				<input type="text" name="domain" id="gappsconf-domain" value="" />
 			</div>
 
