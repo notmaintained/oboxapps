@@ -1,8 +1,8 @@
 <div data-role="page" data-theme="b">
 
-	<div data-role="header" data-backbtn="true">
+	<div data-role="header">
+		<a href="<?php echo absolute_uri('/') ?>" data-icon="home" class="ui-btn-left" onclick="history.go(-2);">Home</a>
 		<h1>Renew Domain</h1>
-		<a href="<?php echo absolute_uri('/') ?>" data-icon="home" class="ui-btn-right" data-iconpos="notext">Home</a>
 	</div>
 
 	<div data-role="content">

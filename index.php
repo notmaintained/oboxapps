@@ -1,17 +1,91 @@
 <?php
 
+	session_start();
 	require 'libs/bombay/glue/glue.lib.php';
+	require 'libs/security.lib.php';
 
 
-	handle_get('/', afunc_returning(array('template'=>'home')));
 
-	handle_get('/apps/account_balance', afunc_returning(array('template'=>'account_balance_form')));
-	handle_post(array('/apps/account_balance', 'action'=>'get_account_balance'), 'account_balance');
 
-	function account_balance($req)
+	handle_get('/', function ($req, $pipeline)
+	{
+		if (isset($_SESSION['global_salt']) and isset($_SESSION['rid']) and isset($_COOKIE['data']))
+		{
+			$_SESSION['authenticated'] = true;
+		}
+		else $_SESSION['authenticated'] = false;
+
+		return next_func($req, $pipeline);
+
+	}, afunc_returning(array('template'=>'home')));
+
+
+
+
+	function auth($req, $pipeline)
+	{
+		if (isset($_SESSION['authenticated']) and is_equal($_SESSION['authenticated'], true))
+		{
+			return next_func($req, $pipeline);
+		}
+		else return array('template'=>'error', 'error_msg'=>"You don't seem to be logged in. Go back, login and try again.");
+
+	}
+
+
+	handle_post(array('/login', 'action'=>'login'), 'oboxapps_login');
+
+	function oboxapps_login($req)
 	{
 		$rid = $req['form']['rid'];
 		$password = $req['form']['password'];
+		$auth_params = "auth-userid=$rid&auth-password=$password";
+		$request = "https://test.httpapi.com/api/resellers/generate-token.json?$auth_params&ip=1.1.1.1";
+		$result = @file_get_contents($request);
+
+		if (is_equal(false, $result))
+		{
+			return array('template'=>'error', 'error_msg'=>'Login Failed. Go back and try again.');
+		}
+
+		$global_salt = str_random_alphanum(128);
+		$user_salt = sha1($rid);
+		$key = generate_key($user_salt, $global_salt);
+
+		$encrypted_data = symmetric_encrypt($password, $key);
+		$_SESSION['authenticated'] = true;
+		$_SESSION['global_salt'] = $global_salt;
+		$_SESSION['rid'] = $rid;
+
+		setcookie('data', $encrypted_data, time()+60*60, '/', '', true, true);
+		return _302_plain(absolute_uri('/'));
+	}
+
+
+	handle_get('/logout', 'oboxapps_logout');
+
+	function oboxapps_logout($req)
+	{
+		setcookie('data', '', time() - 3600, '/', '', true, true);
+		$_SESSION['authenticated'] = false;
+		unset($_SESSION['global_salt']);
+		unset($_SESSION['rid']);
+		return _302_plain(absolute_uri('/'));
+	}
+
+
+
+
+	handle_get('/apps/account_balance', 'auth', 'account_balance');
+
+	function account_balance($req)
+	{
+		$rid = $_SESSION['rid'];
+		$global_salt = $_SESSION['global_salt'];
+		$user_salt = sha1($rid);
+		$key = generate_key($user_salt, $global_salt);
+		$password = symmetric_decrypt($_COOKIE['data'], $key);
+
 		$auth_params = "auth-userid=$rid&auth-password=$password";
 		$request = "https://test.httpapi.com/api/billing/reseller-balance.json?$auth_params&reseller-id=$rid";
 		$result = file_get_contents($request);
@@ -25,15 +99,44 @@
 	}
 
 
+	handle_get('/apps/expiring_domains', 'auth', 'expiring_domains');
+
+	function expiring_domains($req)
+	{
+		$rid = $_SESSION['rid'];
+		$global_salt = $_SESSION['global_salt'];
+		$user_salt = sha1($rid);
+		$key = generate_key($user_salt, $global_salt);
+		$password = symmetric_decrypt($_COOKIE['data'], $key);
+
+		$auth_params = "auth-userid=$rid&auth-password=$password";
+		$now = time()+60*60;
+		$month_from_now = time()+60*60*24*90;
+		$request = "https://test.httpapi.com/api/domains/search.json?$auth_params&no-of-records=10&page-no=1&status=Active&expiry-date-start=$now&expiry-date-end=$month_from_now&order-by=endtime%20asc";
+		$result = file_get_contents($request);
+
+		if (is_equal(false, $result))
+		{
+			return array('template'=>'error', 'error_msg'=>'Could not fetch expiring domains. Go back and try again.');
+		}
+
+		return array('result'=>json_decode($result, true));
+	}
 
 
-	handle_get('/apps/renew_domain', afunc_returning(array('template'=>'renew_domain_form')));
+
+
+	handle_get('/apps/renew_domain', 'auth', afunc_returning(array('template'=>'renew_domain_form')));
 	handle_post(array('/apps/renew_domain', 'action'=>'renew_domain'), 'renew_domain');
 
 	function renew_domain($req)
 	{
-		$rid = $req['form']['rid'];
-		$password = $req['form']['password'];
+		$rid = $_SESSION['rid'];
+		$global_salt = $_SESSION['global_salt'];
+		$user_salt = sha1($rid);
+		$key = generate_key($user_salt, $global_salt);
+		$password = symmetric_decrypt($_COOKIE['data'], $key);
+
 		$auth_params = "auth-userid=$rid&auth-password=$password";
 
 		$domain = $req['form']['domain'];
@@ -60,6 +163,7 @@
 		$request = "https://test.httpapi.com/api/domains/renew.json?$auth_params&order-id=$orderid&years=$years&exp-date=$exp_date&invoice-option=$invoice_option";
 
 		$result = file_get_contents($request);
+
 		if (is_equal(false, $result))
 		{
 			return array('template'=>'error', 'error_msg'=>'Could not perform action. Go back and try again.');
@@ -71,7 +175,7 @@
 
 
 
-	handle_get('/apps/gappsconf', afunc_returning(array('template'=>'gappsconf_form')));
+	handle_get('/apps/gappsconf', 'auth', afunc_returning(array('template'=>'gappsconf_form')));
 	handle_post(array('/apps/gappsconf', 'action'=>'configure_dns'), 'gappsconf');
 
 	function gappsconf($req)
@@ -91,8 +195,13 @@
 		*/
 
 		$domain = $req['form']['domain'];
-		$rid = $req['form']['rid'];
-		$password = $req['form']['password'];
+
+		$rid = $_SESSION['rid'];
+		$global_salt = $_SESSION['global_salt'];
+		$user_salt = sha1($rid);
+		$key = generate_key($user_salt, $global_salt);
+		$password = symmetric_decrypt($_COOKIE['data'], $key);
+
 		$auth_params = "auth-userid=$rid&auth-password=$password";
 
 		$get_orderid_url = "https://test.httpapi.com/api/domains/orderid.json?$auth_params&domain-name=$domain";
