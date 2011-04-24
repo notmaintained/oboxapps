@@ -5,6 +5,7 @@
 	require 'libs/security.lib.php';
 
 
+	if (is_equal('http', URI_SCHEME)) exit_with_302_plain(secure_absolute_uri('/'));
 
 
 	handle_get('/', function ($req, $pipeline)
