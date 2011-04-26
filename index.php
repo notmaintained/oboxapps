@@ -23,7 +23,7 @@
 
 
 
-	function auth($req, $pipeline)
+	function auth_filter($req, $pipeline)
 	{
 		if (isset($_SESSION['authenticated']) and is_equal($_SESSION['authenticated'], true))
 		{
@@ -77,7 +77,7 @@
 
 
 
-	handle_get('/apps/account_balance', 'auth', 'account_balance');
+	handle_get('/apps/account_balance', 'auth_filter', 'account_balance');
 
 	function account_balance($req)
 	{
@@ -100,7 +100,7 @@
 	}
 
 
-	handle_get('/apps/expiring_domains', 'auth', 'expiring_domains');
+	handle_get('/apps/expiring_domains', 'auth_filter', 'expiring_domains');
 
 	function expiring_domains($req)
 	{
@@ -126,8 +126,60 @@
 
 
 
+	handle_get('/apps/last10_domains', 'auth_filter', 'last10_domains');
 
-	handle_get('/apps/renew_domain', 'auth', afunc_returning(array('template'=>'renew_domain_form')));
+	function last10_domains($req)
+	{
+		$rid = $_SESSION['rid'];
+		$global_salt = $_SESSION['global_salt'];
+		$user_salt = sha1($rid);
+		$key = generate_key($user_salt, $global_salt);
+		$password = symmetric_decrypt($_COOKIE['data'], $key);
+
+		$auth_params = "auth-userid=$rid&auth-password=$password";
+		$request = "https://test.httpapi.com/api/domains/search.json?$auth_params&no-of-records=10&page-no=1&status=Active&order-by=creationtime%20desc";
+		$result = file_get_contents($request);
+
+		if (is_equal(false, $result))
+		{
+			return array('template'=>'error', 'error_msg'=>'Could not fetch expiring domains. Go back and try again.');
+		}
+
+		return array('result'=>json_decode($result, true));
+	}
+
+
+	handle_get('/apps/domain_details', 'auth_filter', 'domain_details');
+
+	function domain_details($req)
+	{
+		$rid = $_SESSION['rid'];
+		$global_salt = $_SESSION['global_salt'];
+		$user_salt = sha1($rid);
+		$key = generate_key($user_salt, $global_salt);
+		$password = symmetric_decrypt($_COOKIE['data'], $key);
+
+		if (!isset($req['query']['orderid']))
+		{
+			return array('template'=>'error', 'error_msg'=>'No orderid found!');
+		}
+
+		$orderid = $req['query']['orderid'];
+		$auth_params = "auth-userid=$rid&auth-password=$password";
+		$request = "https://test.httpapi.com/api/domains/details.json?$auth_params&order-id=$orderid&options=All";
+		$result = file_get_contents($request);
+
+		if (is_equal(false, $result))
+		{
+			return array('template'=>'error', 'error_msg'=>'Could not fetch expiring domains. Go back and try again.');
+		}
+
+		return array('result'=>json_decode($result, true));
+	}
+
+
+
+	handle_get('/apps/renew_domain', 'auth_filter', afunc_returning(array('template'=>'renew_domain_form')));
 	handle_post(array('/apps/renew_domain', 'action'=>'renew_domain'), 'renew_domain');
 
 	function renew_domain($req)
@@ -176,7 +228,7 @@
 
 
 
-	handle_get('/apps/gappsconf', 'auth', afunc_returning(array('template'=>'gappsconf_form')));
+	handle_get('/apps/gappsconf', 'auth_filter', afunc_returning(array('template'=>'gappsconf_form')));
 	handle_post(array('/apps/gappsconf', 'action'=>'configure_dns'), 'gappsconf');
 
 	function gappsconf($req)
