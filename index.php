@@ -111,9 +111,7 @@
 		$password = symmetric_decrypt($_COOKIE['data'], $key);
 
 		$auth_params = "auth-userid=$rid&auth-password=$password";
-		$now = time()+60*60;
-		$month_from_now = time()+60*60*24*90;
-		$request = "https://test.httpapi.com/api/domains/search.json?$auth_params&no-of-records=10&page-no=1&status=Active&expiry-date-start=$now&expiry-date-end=$month_from_now&order-by=endtime%20asc";
+		$request = "https://test.httpapi.com/api/domains/search.json?$auth_params&no-of-records=10&page-no=1&status=Active&order-by=endtime%20asc";
 		$result = file_get_contents($request);
 
 		if (is_equal(false, $result))
@@ -126,9 +124,9 @@
 
 
 
-	handle_get('/apps/last10_domains', 'auth_filter', 'last10_domains');
+	handle_get('/apps/new_domains', 'auth_filter', 'new_domains');
 
-	function last10_domains($req)
+	function new_domains($req)
 	{
 		$rid = $_SESSION['rid'];
 		$global_salt = $_SESSION['global_salt'];
@@ -142,7 +140,7 @@
 
 		if (is_equal(false, $result))
 		{
-			return array('template'=>'error', 'error_msg'=>'Could not fetch expiring domains. Go back and try again.');
+			return array('template'=>'error', 'error_msg'=>'Could not fetch new domains. Go back and try again.');
 		}
 
 		return array('result'=>json_decode($result, true));
@@ -171,12 +169,25 @@
 
 		if (is_equal(false, $result))
 		{
-			return array('template'=>'error', 'error_msg'=>'Could not fetch expiring domains. Go back and try again.');
+			return array('template'=>'error', 'error_msg'=>'Could not fetch domain details. Go back and try again.');
 		}
 
-		return array('result'=>json_decode($result, true));
-	}
+		$result = json_decode($result, true);
 
+		$customerid = $result['customerid'];
+		$request = "https://test.httpapi.com/api/customers/details-by-id.json?$auth_params&customer-id=$customerid";
+		$customer_details = file_get_contents($request);
+
+		if (is_equal(false, $customer_details))
+		{
+			return array('template'=>'error', 'error_msg'=>'Could not fetch customer details. Go back and try again.');
+		}
+
+		$customer_details = json_decode($customer_details, true);
+		$result['customer_details'] = $customer_details;
+
+		return array('result'=>$result);
+	}
 
 
 	handle_get('/apps/renew_domain', 'auth_filter', afunc_returning(array('template'=>'renew_domain_form')));

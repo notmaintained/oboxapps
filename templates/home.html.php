@@ -17,8 +17,8 @@
 		<ul data-role="listview" data-inset="true">
 			<li data-role="list-divider">Apps</li>
 			<li><a href="<?php echo absolute_uri('/apps/account_balance') ?>">Account Balance</a></li>
-			<li><a href="<?php echo absolute_uri('/apps/expiring_domains') ?>">Domains Expiring in 90 days</a></li>
-			<li><a href="<?php echo absolute_uri('/apps/last10_domains') ?>">Last 10 Domains</a></li>
+			<li><a href="<?php echo absolute_uri('/apps/expiring_domains') ?>">Expiring Domains</a></li>
+			<li><a href="<?php echo absolute_uri('/apps/new_domains') ?>">New Domains</a></li>
 			<li><a href="<?php echo absolute_uri('/apps/renew_domain') ?>">Renew Domain</a></li>
 			<li><a href="<?php echo absolute_uri('/apps/gappsconf') ?>">Google Apps Configurator</a></li>
 		</ul>

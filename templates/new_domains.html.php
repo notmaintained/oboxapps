@@ -2,7 +2,7 @@
 
 	<div data-role="header" data-backbtn="true">
 		<a href="<?php echo absolute_uri('/') ?>" data-icon="arrow-l" data-rel="back">Back</a>
-		<h1>Last 10 Domains</h1>
+		<h1>New Domains (only showing 10)</h1>
 		<a onclick="$.mobile.pageLoading(); location.reload();" href="<?php echo absolute_uri('/apps/expiring_domains') ?>" data-icon="refresh" data-iconpos="notext" class="ui-btn-right">Refresh</a>
 	</div>
 
