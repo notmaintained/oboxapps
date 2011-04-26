@@ -17,13 +17,13 @@
 				<p><?php echo $result['customer_details']['state'] ?>, <?php echo $result['customer_details']['country'] ?></p>
 				<!--/a-->
 			<li>
-				<a href="mailto://<?php echo $result['customer_details']['useremail'] ?>">
+				<a href="mailto:<?php echo $result['customer_details']['useremail'] ?>">
 					<?php echo $result['customer_details']['useremail'] ?>
 				</a>
 			</li>
 
 			<li>
-				<a href="tel://+<?php echo $result['customer_details']['telnocc'].$result['customer_details']['telno'] ?>">
+				<a href="tel:+<?php echo $result['customer_details']['telnocc'].$result['customer_details']['telno'] ?>">
 					+<?php echo "{$result['customer_details']['telnocc']} {$result['customer_details']['telno']}" ?>
 				</a>
 			</li>
@@ -39,13 +39,13 @@
 				<p><?php echo $result['registrantcontact']['city'] ?> <?php echo $result['registrantcontact']['zip'] ?></p>
 				<p><?php echo $result['registrantcontact']['state'] ?>, <?php echo $result['registrantcontact']['country'] ?></p>
 			<li>
-				<a href="mailto://<?php echo $result['registrantcontact']['emailaddr'] ?>">
+				<a href="mailto:<?php echo $result['registrantcontact']['emailaddr'] ?>">
 					<?php echo $result['registrantcontact']['emailaddr'] ?>
 				</a>
 			</li>
 
 			<li>
-				<a href="tel://+<?php echo $result['registrantcontact']['telnocc'].$result['registrantcontact']['telno'] ?>">
+				<a href="tel:+<?php echo $result['registrantcontact']['telnocc'].$result['registrantcontact']['telno'] ?>">
 					+<?php echo "{$result['registrantcontact']['telnocc']} {$result['registrantcontact']['telno']}" ?>
 				</a>
 			</li>
